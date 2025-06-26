@@ -1,0 +1,29 @@
+name: Compile and Generate
+on:
+  workflow_dispatch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup
+        run: make setup
+      - name: Compile and Generate using Make
+        id: work
+        run: make -j 4 || echo "WORK_FAILED=true" >> $GITHUB_ENV
+      - name: Assemble into Package
+        run: make package-debug
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-debug
+          path: package-debug.zip
+      - name: Fail workflow if work failed
+        if: env.WORK_FAILED == 'true'
+        run: |
+          echo "Main failed on step `Compile and Generate using Make`"
+          echo "Incomplete artifact was still uploaded"
+          exit 1
