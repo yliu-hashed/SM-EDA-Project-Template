@@ -1,0 +1,20 @@
+# file loading is done through command line arguments when invoking this command
+hierarchy -top top
+
+# standard synthesis steps
+flatten -noscopeinfo
+proc; opt -full; clean
+memory -bram /flow/bram.rule; opt -full
+techmap; opt
+
+# optimize and map into cell library
+dfflibmap -liberty /flow/sm_cells.lib
+abc -liberty /flow/sm_cells.lib -script /flow/script.abc
+
+clean -purge
+
+# write out design to json
+write_json tmp/synth.json
+
+# show stats in log for debug reasons
+stat
