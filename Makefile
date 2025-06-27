@@ -17,15 +17,15 @@ VERILOG_SRC_FILES := $(wildcard src/*.v)
 # Synthesis for top ------------------------------------------------------------
 ## verilog --yosys-> synth
 tmp/synth.json: resources/script.ys $(VERILOG_SRC_FILES)
-	$(call DOCKER_RUN,yosys -s resources/script.ys src/top.v)
+	$(call DOCKER_RUN,yosys -s resources/script.ys src/top.v &> logs/yosys.log)
 
 ## synth --ys2sm-> model
 tmp/model.json: tmp/synth.json
-	$(call DOCKER_RUN,sm-eda ys2sm --clk clk tmp/synth.json tmp/model.json)
+	$(call DOCKER_RUN,sm-eda ys2sm -v --clk clk tmp/synth.json tmp/model.json &> logs/ys2sm.log)
 
 ## model --place-> blueprint
 blueprints/blueprint.json: tmp/model.json resources/config.json
-	$(call DOCKER_RUN,sm-eda place -v --config resources/config.json tmp/model.json blueprints/blueprint.json > logs/place.log)
+	$(call DOCKER_RUN,sm-eda place -v --config resources/config.json tmp/model.json blueprints/blueprint.json &> logs/place.log)
 
 package-release.zip: tmp/model.json
 	zip -r package-release.zip blueprints
