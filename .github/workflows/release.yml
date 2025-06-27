@@ -1,0 +1,24 @@
+name: Compile for Release
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup
+        run: make setup
+      - name: Compile and Generate using Make
+        id: work
+        run: make -j 4
+      - name: Assemble into Package
+        run: make package-release
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "package-release.zip"
+          allowUpdates: true
