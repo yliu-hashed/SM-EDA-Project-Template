@@ -1,3 +1,4 @@
+`default_nettype none
 
 // Top Level Module
 // If you changed this name, you also need to change `resources/script.ys`
@@ -5,9 +6,9 @@
 module top (
   // Top Level Ports
   // If you changed these ports, you also need to change `resources/config.json`
-  input  [7:0] i_a,
-  input  [7:0] i_b,
-  output [7:0] o_v
+  input  wire [7:0] i_a,
+  input  wire [7:0] i_b,
+  output wire [7:0] o_v
   );
 
   // Dummy content. Put your code here...
